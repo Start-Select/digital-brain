@@ -1,96 +1,71 @@
-import type { TaskType, RoutineFrequency, MoodBoardStatus, DayAbbr } from '@/types'
+import type { HabitFrequency } from '@/types'
 
-export type Task = {
-  id: string
-  user_id: string
-  title: string
-  type: TaskType
-  done: boolean
-  date: string | null
-  created_at: string
-}
-export type TaskInsert = Omit<Task, 'id' | 'created_at'>
-export type TaskUpdate = Partial<Omit<Task, 'id' | 'user_id' | 'created_at'>>
+// ---------------------------------------------------------------------------
+// habits
+// ---------------------------------------------------------------------------
 
-export type Project = {
-  id: string
-  user_id: string
-  title: string
-  notes: string | null
-  notion_url: string | null
-  created_at: string
-}
-export type ProjectInsert = Omit<Project, 'id' | 'created_at'>
-export type ProjectUpdate = Partial<Omit<Project, 'id' | 'user_id' | 'created_at'>>
-
-export type ProjectTask = {
-  id: string
-  project_id: string
-  title: string
-  done: boolean
-  created_at: string
-}
-export type ProjectTaskInsert = Omit<ProjectTask, 'id' | 'created_at'>
-
-export type RoutineItem = {
-  id: string
-  user_id: string
-  title: string
-  frequency: RoutineFrequency
-  category: string | null
-  custom_days: DayAbbr[] | null
-  created_at: string
-}
-export type RoutineItemInsert = Omit<RoutineItem, 'id' | 'created_at'>
-export type RoutineItemUpdate = Partial<Omit<RoutineItem, 'id' | 'user_id' | 'created_at'>>
-
-export type RoutineLog = {
-  id: string
-  routine_item_id: string
-  completed_at: string
-}
-
-export type MoodBoardCategory = {
+export type Habit = {
   id: string
   user_id: string
   name: string
-  created_at: string
-}
-export type MoodBoardCategoryInsert = Omit<MoodBoardCategory, 'id' | 'created_at'>
-
-export type MoodBoardItem = {
-  id: string
-  user_id: string
-  title: string
+  description: string | null
+  icon: string | null        // emoji e.g. "🏃"
+  color: string | null       // hex e.g. "#7c3aed"
+  frequency: HabitFrequency
+  frequency_days: number[] | null // ISO day numbers [1–7]; used when frequency = 'custom'
   category_id: string | null
-  status: MoodBoardStatus
+  order: number
+  archived: boolean
+  deleted_at: string | null
   created_at: string
 }
-export type MoodBoardItemInsert = Omit<MoodBoardItem, 'id' | 'created_at'>
-export type MoodBoardItemUpdate = Partial<Omit<MoodBoardItem, 'id' | 'user_id' | 'created_at'>>
 
-export type ThoughtSection = {
+export type HabitInsert = Omit<Habit, 'id' | 'created_at'>
+export type HabitUpdate = Partial<Omit<Habit, 'id' | 'user_id' | 'created_at'>>
+
+// ---------------------------------------------------------------------------
+// habit_categories
+// ---------------------------------------------------------------------------
+
+export type HabitCategory = {
   id: string
   user_id: string
   name: string
-  created_at: string
+  color: string | null  // hex
+  icon: string | null   // emoji
+  order: number
+  deleted_at: string | null
 }
-export type ThoughtSectionInsert = Omit<ThoughtSection, 'id' | 'created_at'>
 
-export type Thought = {
-  id: string
-  user_id: string
-  title: string
-  content: string | null
-  section_id: string | null
-  created_at: string
-}
-export type ThoughtInsert = Omit<Thought, 'id' | 'created_at'>
-export type ThoughtUpdate = Partial<Omit<Thought, 'id' | 'user_id' | 'created_at'>>
+export type HabitCategoryInsert = Omit<HabitCategory, 'id'>
+export type HabitCategoryUpdate = Partial<Omit<HabitCategory, 'id' | 'user_id'>>
 
-export type CalendarToken = {
+// ---------------------------------------------------------------------------
+// habit_logs
+// ---------------------------------------------------------------------------
+
+export type HabitLog = {
   id: string
+  habit_id: string
   user_id: string
-  google_token: string
-  created_at: string
+  completed_at: string  // ISO timestamp
+  note: string | null
 }
+
+export type HabitLogInsert = Omit<HabitLog, 'id'>
+
+// ---------------------------------------------------------------------------
+// streaks  (computed / cached — updated server-side or via Edge Function)
+// ---------------------------------------------------------------------------
+
+export type Streak = {
+  id: string
+  habit_id: string
+  user_id: string
+  current_streak: number
+  longest_streak: number
+  last_completed_at: string | null
+}
+
+// TODO (Phase 3): add Supabase-generated Database type once tables are created,
+// and replace these hand-written types with the generated ones for full type safety.
